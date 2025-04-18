@@ -74,10 +74,34 @@
     </form>
   </div>
   <script>
-    document.getElementById('loginForm').addEventListener('submit', function(event) {
+    document.getElementById('loginForm').addEventListener('submit', async function(event) {
       event.preventDefault();
-      alert('Login successful.');
-      window.location.href = 'index.html';
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        const response = await fetch('/api/users/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ username, password }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          alert('Login failed: ' + (errorData.message || 'Unknown error'));
+          return;
+        }
+
+        const data = await response.json();
+        // Store token in localStorage or cookie
+        localStorage.setItem('token', data.token);
+        alert('Login successful.');
+        window.location.href = 'index.html';
+      } catch (error) {
+        alert('Login failed: ' + error.message);
+      }
     });
   </script>
 </body>

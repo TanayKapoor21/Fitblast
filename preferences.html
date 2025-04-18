@@ -50,10 +50,43 @@
         </div>
     </div>
     <script>
-      document.getElementById('preferencesForm').addEventListener('submit', function(event) {
+      document.getElementById('preferencesForm').addEventListener('submit', async function(event) {
         event.preventDefault();
-        alert('Your preferences have been saved.');
-        window.location.href = 'index.html';
+
+        const workoutType = document.getElementById('workoutType').value;
+        const intensity = document.getElementById('intensity').value;
+        const duration = document.getElementById('duration').value;
+        const daysPerWeek = document.getElementById('daysPerWeek').value;
+        const goals = document.getElementById('goals').value;
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+          alert('You must be logged in to save preferences.');
+          window.location.href = 'login.html';
+          return;
+        }
+
+        try {
+          const response = await fetch('/api/users/preferences', {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ workoutType, intensity, duration, daysPerWeek, goals }),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            alert('Failed to save preferences: ' + (errorData.message || 'Unknown error'));
+            return;
+          }
+
+          alert('Your preferences have been saved.');
+          window.location.href = 'index.html';
+        } catch (error) {
+          alert('Failed to save preferences: ' + error.message);
+        }
       });
     </script>
 </body>

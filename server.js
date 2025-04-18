@@ -48,9 +48,16 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Serve frontend
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, 'login.html'));
+});
+
+app.get('/preferences', (req, res) => {
+  res.sendFile(path.join(__dirname, 'preferences.html'));
+});
+
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 const PORT = process.env.PORT || 5000;
